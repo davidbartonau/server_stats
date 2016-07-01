@@ -64,7 +64,7 @@ def send_stats(stats={}):
     if resp.status_code != 200:
         process_exception("API responded with non 200 status. code: %s body: %s" %(resp.status_code, resp.text), critical = True)
 
-    if resp.json()['status'] == 'ERROR':
+    if json.loads(resp.content)['status'] == 'ERROR':
         process_exception("Error while sending data status: %(status)s errorDetails: %(errorDetails)s" % resp.json(), critical = True)
 
 def check_config_sections(sections=[], critical=False):

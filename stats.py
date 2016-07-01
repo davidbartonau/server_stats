@@ -42,9 +42,10 @@ def cpu_stats():
 
 # Returns real memory and swap memory in MB
 def mem_stats():
-    mem = psutil.virtual_memory()
-    real_used = common.b_to_mb(mem.used - mem.buffers)
-    swap_used = common.b_to_mb(psutil.swap_memory().used)
+    phymem = psutil.phymem_usage()
+    virtmem = psutil.virtmem_usage()
+    real_used = common.b_to_mb(phymem.used)
+    swap_used = common.b_to_mb(virtmem.used)
 
     date = common.now()
     print "MEM date: %s used: %s swap_used: %s" % (date, real_used, swap_used, )
@@ -63,7 +64,7 @@ def network_stats():
     if not common.check_config_sections(['networking', 'interfaces']):
         return network_bytes
 
-    counters = psutil.net_io_counters(True)
+    counters = psutil.network_io_counters(pernic=True)
     for interface in common.config['networking']['interfaces']:
         counter = counters.get(interface, None)
         if not counter:
