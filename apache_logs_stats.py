@@ -3,7 +3,7 @@
 
 import os, glob, re 
 import common
-LAST_START_TIME = common.touch_last_start_file(prefix='log_parser')
+
 
 def get_response_time(line='', url_regex=None):
     splited = line.split()
@@ -20,12 +20,6 @@ def process_logs(log_name_pattern, url_regex=None):
     non_matching_count = 0
 
     for log_path in glob.glob(log_name_pattern):
-        log_path_mtime = os.path.getmtime(log_path)
-
-        if log_path_mtime < LAST_START_TIME: 
-            print "LOGS Skipping %s: %s < %s" % (log_path, str(log_path_mtime), str(LAST_START_TIME))
-            continue
-    
         log_name = os.path.basename(log_path)
         shift_file_path = os.path.join(common.DATA_DIR, log_name)
     
@@ -91,4 +85,16 @@ def apache_stats():
 
     return apache_logs_stats
 
+
+def main():
+    stats = apache_stats()
+
+    common.check_config_sections(['api_url',], critical=True)
+    common.check_config_sections(['api_key',], critical=True)
+
+    common.send_stats(stats)
+    exit(common.EXIT_CODE if common.EXIT_CODE < 256 else 255)
+
+if __name__ == "__main__":
+    main()
 
