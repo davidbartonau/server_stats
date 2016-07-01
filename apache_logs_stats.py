@@ -17,8 +17,13 @@ def get_response_time(line='', url_regex=None):
 
 def process_logs(log_name_pattern, url_regex=None):
     response_times = []
+    non_matching_count = 0
+
     for log_path in glob.glob(log_name_pattern):
-        if os.path.getmtime(log_path) < LAST_START_TIME: 
+        log_path_mtime = os.path.getmtime(log_path)
+
+        if log_path_mtime < LAST_START_TIME: 
+            print "LOGS Skipping %s: %s < %s" % (log_path, str(log_path_mtime), str(LAST_START_TIME))
             continue
     
         log_name = os.path.basename(log_path)
@@ -33,12 +38,16 @@ def process_logs(log_name_pattern, url_regex=None):
                 common.process_exception(e, critical = True)
         
         try:
+            print "LOGS Checking log: %s shift: %d" % (log_path, shift)
+
             with open(log_path, 'r') as apache_log:
                 apache_log.seek(shift, 0)
                 for line in apache_log:
                     response_time = get_response_time(line, url_regex)
                     if response_time != None:
                         response_times.append(response_time)
+                    else:
+                        non_matching_count = non_matching_count + 1
         
                 shift = apache_log.tell()
 
@@ -51,7 +60,7 @@ def process_logs(log_name_pattern, url_regex=None):
     count = len(response_times)
     avg_time = sum(response_times) / count if count > 0 else 0
 
-    return (count, avg_time)
+    return (count, avg_time, non_matching_count)
 
 
 # Returns # of requests and average response duration in ms.
@@ -71,10 +80,10 @@ def apache_stats():
         url_filter_string = website_config.get('url_filter', None)
         url_regex = re.compile(url_filter_string) if url_filter_string else None
 
-        count, avg_time = process_logs(log_file_pattern, url_regex)
+        count, avg_time, non_matching_count = process_logs(log_file_pattern, url_regex)
 
         date = common.now()
-        print "LOGS date: %s website: %s count: %s duration: %s" % (date, website_name, count, avg_time)
+        print "LOGS date: %s website: MATCHING %s count: %s duration: %s NON-MATCHING: %s" % (date, website_name, count, avg_time, non_matching_count)
         apache_logs_stats.extend([
             {'date': date, 't': 'LOG_REQUESTS-COUNT', 'd1': common.HOSTNAME, 'd2': website_name, 'V': count},
             {'date': date, 't': 'LOG_REQUESTS-DURATION', 'd1': common.HOSTNAME, 'd2': website_name, 'V': avg_time},
@@ -82,14 +91,4 @@ def apache_stats():
 
     return apache_logs_stats
 
-def main():
-    stats = apache_stats()
 
-    common.check_config_sections(['api_url',], critical=True)
-    common.check_config_sections(['api_key',], critical=True)
-
-    common.send_stats(stats)
-    exit(common.EXIT_CODE if common.EXIT_CODE < 256 else 255)
-
-if __name__ == "__main__":
-    main()
