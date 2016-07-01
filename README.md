@@ -19,12 +19,12 @@ I am writing a service to POST the data to now.  It's in early stages at the mom
 apt-get install python-yaml python-psutil python-requests
 
 # Usage
-The system is composed of 3 utilities:
-stats.py
-apache_logs_stats.py
-dirs_sizes.py
+The system is composed of 1 utility that can collect data depending on the command line arguments you pass:
+```
+stats.py stats.py [-h] [--diskUsed] [--diskIO] [--dirUsed] [--cpu] [--memory] [--network] [--apacheLog]
+```
 
-The system will try to send as much data as it can, however an error will result in a non-0 result
+See below for which arguments trigger what data to be sent.  The system will try to send as much data as it can, however an error will result in a non-0 result
 
 
 # Data Posted
@@ -34,37 +34,37 @@ The system's goal is to POST data to the api_url, with a record like the followi
 The individual records are documented below:
 ## Server stats from stats.py
 ```
-# Disk used at the mountpoint (d2) in MB
+# --diskUsed Disk used at the mountpoint (d2) in MB
 {"date": "2016-06-30 21:20:28", "V": 320032.71484375, "d2": "/", "t": "DISK-USAGE", "d1": "my-server-name"}
 
-# CPU time in iowait in ms (since bootup)
+# --cpu CPU time in iowait in ms (since bootup)
 {"date": "2016-06-30 21:20:28", "V": 512340, "t": "CPU-IOWAIT", "d1": "my-server-name"}
 
-# Total CPU time (user + system) in iowait in ms (since bootup).
+# --cpu Total CPU time (user + system) in iowait in ms (since bootup).
 {"date": "2016-06-30 21:20:28", "V": 22430720, "t": "CPU-TOTAL", "d1": "my-server-name"}
 
-# Memory used (used - buffers) in MB
+# --memory Memory used (used - buffers) in MB
 {"date": "2016-06-30 21:20:28", "V": 7351.94140625, "t": "MEM-USED", "d1": "my-server-name"}
 
-# Swap used in MB
+# --memory Swap used in MB
 {"date": "2016-06-30 21:20:28", "V": 1633.88671875, "t": "MEM-SWAP", "d1": "my-server-name"}
 
-# Network traffic received in MB on the interface d2
+# --network Network traffic received in MB on the interface d2
 {"date": "2016-06-30 21:20:28", "V": 619.4905185699463, "d2": "eth0", "t": "NET-RCV", "d1": "my-server-name"}
 
-# Network traffic sent in MB on the interface d2
+# --network Network traffic sent in MB on the interface d2
 {"date": "2016-06-30 21:20:28", "V": 557.3779401779175, "d2": "eth0", "t": "NET-SENT", "d1": "my-server-name"}
 
-# Disk reads since bootup on the device d2
+# --diskIO Disk reads since bootup on the device d2
 {"date": "2016-06-30 21:20:28", "V": 1245400, "d2": "dm-0", "t": "DISK-READS", "d1": "my-server-name"}
 
-# # Disk writes since bootup on the device d2
+# --diskIO Disk writes since bootup on the device d2
 {"date": "2016-06-30 21:20:28", "V": 389955, "d2": "dm-0", "t": "DISK-WRITES", "d1": "my-server-name"}
 ```
 
 ## Directory size from dirs_sizes.py
 ```
-# Send the size of the directory in MB
+# --dirUsed Send the size of the directory in MB
 {"date": "2016-06-30 21:04:06", "V": 92672.92578125, "d2": "/root/backups/zbackup.encrypted/", "t": "DSIZE", "d1": "my-server-name"}
 ```
 
@@ -76,10 +76,10 @@ We scan the matching log files.  The log files are a standard Apache tomcat log 
 Sample POST Data
 ```
 
-# Send the number of requests since the last invocation
+# --apacheLog Send the number of requests since the last invocation
 {"date": "2016-06-30 21:08:54", "V": 5, "d2": "vm1_tc8", "t": "LOG_REQUESTS-COUNT", "d1": "my-server-name"}
 
-# Send the average duration of requests since the last invocation in ms
+# --apacheLog Send the average duration of requests since the last invocation in ms
 {"date": "2016-06-30 21:08:54", "V": 35.8, "d2": "vm1_tc8", "t": "LOG_REQUESTS-DURATION", "d1": "my-server-name"}
 ```
 

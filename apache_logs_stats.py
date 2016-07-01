@@ -86,15 +86,3 @@ def apache_stats():
     return apache_logs_stats
 
 
-def main():
-    stats = apache_stats()
-
-    common.check_config_sections(['api_url',], critical=True)
-    common.check_config_sections(['api_key',], critical=True)
-
-    common.send_stats(stats)
-    exit(common.EXIT_CODE if common.EXIT_CODE < 256 else 255)
-
-if __name__ == "__main__":
-    main()
-
