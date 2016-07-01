@@ -16,7 +16,7 @@ You need to execute the scripts via a crontab.  The script will then POST the da
 I am writing a service to POST the data to now.  It's in early stages at the moment, so go to www.oneit-software.com.au and contact me to have a go.  I'll work with you to smooth out features.
 
 # Dependencies
-apt-get install python-yaml python-psutil
+apt-get install python-yaml python-psutil python-requests
 
 # Usage
 The system is composed of 3 utilities:
@@ -69,7 +69,13 @@ The individual records are documented below:
 ```
 
 ## Webserver requests from apache_logs_stats.py
+We scan the matching log files.  The log files are a standard Apache tomcat log file with the response duration after the response code, which should have a format like:
 ```
+203.161.1.2 - - [01/Jul/2016:06:52:08 +0800] "GET /test/file.htm HTTP/1.1" 200 1ms 53938 "http://www.madeup.com.au/test/index.htm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.63 Safari/537.36" www.madeup.com.au
+```
+Sample POST Data
+```
+
 # Send the number of requests since the last invocation
 {"date": "2016-06-30 21:08:54", "V": 5, "d2": "vm1_tc8", "t": "LOG_REQUESTS-COUNT", "d1": "my-server-name"}
 
@@ -108,7 +114,7 @@ networking:
                 - br0
 
 apache_logs:
-# List of keys. The key is the value used in dim2
+        # List of keys. The key is the value used in dim2
         - website1:
                 # The glob of the files to scan for
                 file: /var/log/apache2/log_website1*.log
