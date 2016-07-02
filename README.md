@@ -13,7 +13,7 @@ ln -sf /root/server_stats/etc/stats.yaml /etc/
 
 You need to execute the scripts via a crontab.  The script will then POST the data to a server you nominate.  Presumably you could set up a php script to post data to a PostgreSQL, Mongo or CouchDB database.  Then write a query interface for it.
 
-I am writing a service to POST the data to now.  It's in early stages at the moment, so go to www.oneit-software.com.au and contact me to have a go.  I'll work with you to smooth out features.
+I am writing a service to POST the data to now.  I run a [software development company](http://www.oneit-software.com.au/) and I'm writing this tool to support hundreds of VMs.  It's in early stages at the moment, but I'd love to get feedback from others to make it better, so contact me and I'll set you up an account.
 
 # Dependencies
 apt-get install python-yaml python-psutil python-requests
