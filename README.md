@@ -60,15 +60,18 @@ The individual records are documented below:
 
 # --diskIO Disk writes since bootup on the device d2
 {"date": "2016-06-30 21:20:28", "V": 389955, "d2": "dm-0", "t": "DISK-WRITES", "d1": "my-server-name"}
-```
 
-## Directory size from dirs_sizes.py
-```
 # --dirUsed Send the size of the directory in MB
 {"date": "2016-06-30 21:04:06", "V": 92672.92578125, "d2": "/root/backups/zbackup.encrypted/", "t": "DSIZE", "d1": "my-server-name"}
+
+# --apacheLog Send the number of requests since the last invocation
+{"date": "2016-06-30 21:08:54", "V": 5, "d2": "vm1_tc8", "t": "LOG_REQUESTS-COUNT", "d1": "my-server-name"}
+
+# --apacheLog Send the average duration of requests since the last invocation in ms
+{"date": "2016-06-30 21:08:54", "V": 35.8, "d2": "vm1_tc8", "t": "LOG_REQUESTS-DURATION", "d1": "my-server-name"}
 ```
 
-## Webserver requests from apache_logs_stats.py
+## Apache Log Caveats
 We scan the matching log files.  The log files are a standard Apache tomcat log file with the response duration after the response code, which should have a format like:
 ```
 203.161.1.2 - - [01/Jul/2016:06:52:08 +0800] "GET /test/file.htm HTTP/1.1" 200 1ms 53938 "http://www.madeup.com.au/test/index.htm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.63 Safari/537.36" www.madeup.com.au
@@ -77,15 +80,7 @@ I set that up in Tomcat using the following code in server.xml:
 ```
 <Valve className="org.apache.catalina.valves.AccessLogValve" directory="/usr/local/tomcat/vm1/logs/" prefix="tc" suffix=".log" pattern="%h %l %u %t &quot;%r&quot; %s %Dms %b &quot;%{Referer}i&quot; &quot;%{User-agent}i&quot; %v" resolveHosts="false"/>
 ```
-Sample POST Data
-```
 
-# --apacheLog Send the number of requests since the last invocation
-{"date": "2016-06-30 21:08:54", "V": 5, "d2": "vm1_tc8", "t": "LOG_REQUESTS-COUNT", "d1": "my-server-name"}
-
-# --apacheLog Send the average duration of requests since the last invocation in ms
-{"date": "2016-06-30 21:08:54", "V": 35.8, "d2": "vm1_tc8", "t": "LOG_REQUESTS-DURATION", "d1": "my-server-name"}
-```
 
 # Config description
 Config file path: /etc/stats.yaml - regular yaml file.
