@@ -3,6 +3,7 @@
 
 import psutil
 import common
+import logging
 
 
 # Returns iowait and user+sus times in milliseconds
@@ -12,7 +13,7 @@ def cpu_stats():
     iowait = common.s_to_milliseconds(cpu_times.iowait)
 
     date = common.now()
-    print "CPU date: %s total: %s iowait: %s" % (date, user_system, iowait, )
+    logging.info ("CPU date: %s total: %s iowait: %s", date, user_system, iowait, )
     cpu_times = [
             {"date": date, "t": "CPU-IOWAIT", "d1": common.HOSTNAME, "V": iowait},
             {"date": date, "t": "CPU-TOTAL",  "d1": common.HOSTNAME, "V": user_system},

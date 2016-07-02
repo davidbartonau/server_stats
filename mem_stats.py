@@ -3,6 +3,7 @@
 
 import psutil
 import common
+import logging
 
 
 # Returns real memory and swap memory in MB
@@ -13,7 +14,7 @@ def mem_stats():
     swap_used = common.b_to_mb(virtmem.used)
 
     date = common.now()
-    print "MEM date: %s used: %s swap_used: %s" % (date, real_used, swap_used, )
+    logging.info ("MEM date: %s used: %s swap_used: %s", date, real_used, swap_used, )
 
     mem_stats = [
             {"date": date, "t": "MEM-USED", "d1": common.HOSTNAME, "V": real_used},

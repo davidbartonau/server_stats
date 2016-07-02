@@ -21,8 +21,11 @@ apt-get install python-yaml python-psutil python-requests
 # Usage
 The system is composed of 1 utility that can collect data depending on the command line arguments you pass:
 ```
-stats.py stats.py [-h] [--diskUsed] [--diskIO] [--dirUsed] [--cpu] [--memory] [--network] [--apacheLog]
+stats.py stats.py [-h] [--verbosity] 
+                  [--diskUsed] [--diskIO] [--dirUsed] [--cpu] [--memory] [--network] [--apacheLog]
 ```
+
+--verbosity can be 0 - 2 (defaults to 1).
 
 See below for which arguments trigger what data to be sent.  The system will try to send as much data as it can, however an error will result in a non-0 result
 

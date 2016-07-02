@@ -11,6 +11,17 @@ CONFIG_FILE = "/etc/stats.yaml"
 DATEFMT = '%Y-%m-%d %H:%M:%S'
 LOG_FMT = "%(asctime)s %(levelname)-8.8s: %(message)s"
 DATA_DIR = '/var/stats_data'
+CONFIG = None
+
+def setLogLevel (logLevel):
+    if logLevel == 0:
+        logging.basicConfig(format = LOG_FMT, level = logging.WARNING, datefmt = DATEFMT)
+    elif logLevel == 1:
+        logging.basicConfig(format = LOG_FMT, level = logging.INFO, datefmt = DATEFMT)        
+    elif logLevel == 2:
+        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT)
+    elif logLevel == 3:
+        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT)
 
 def process_exception(e, critical = False):
     global EXIT_CODE
@@ -22,9 +33,11 @@ def process_exception(e, critical = False):
     logging.warning(e)
 
 def parse_config():
+    global CONFIG
+
     with open(CONFIG_FILE) as config_file:
         try:
-            return yaml.load(config_file)
+            CONFIG = yaml.load(config_file)
         except Exception as e:
             process_exception(e, critical = True)
 
@@ -42,13 +55,13 @@ def s_to_milliseconds(val):
 
 def send_stats(stats={}):
     json_data = json.dumps({
-            "apiKey":  config['api_key'],
+            "apiKey":  CONFIG['api_key'],
             "records": stats
             })
     date = now()
-    print "API request date: %s json %s" % (date, json_data, )
+    logging.info ("API request date: %s json %s", date, json_data, )
 
-    resp = requests.post(config['api_url'], data = {'json': json_data})
+    resp = requests.post(CONFIG['api_url'], data = {'json': json_data})
     if resp.status_code != 200:
         process_exception("API responded with non 200 status. code: %s body: %s" %(resp.status_code, resp.text), critical = True)
 
@@ -56,7 +69,7 @@ def send_stats(stats={}):
         process_exception("Error while sending data status: %(status)s errorDetails: %(errorDetails)s" % resp.json(), critical = True)
 
 def check_config_sections(sections=[], critical=False):
-    section=config
+    section=CONFIG
     for section_name in sections:
         section = section.get(section_name, None)
         if not section:
@@ -64,9 +77,6 @@ def check_config_sections(sections=[], critical=False):
             return False
 
     return True
-
-logging.basicConfig(format = LOG_FMT, level = logging.INFO, datefmt = DATEFMT)
-config = parse_config()
 
 if not os.path.exists(DATA_DIR):
     try:

@@ -20,8 +20,11 @@ def main():
     parser.add_argument ("--memory",   action='store_true',     help='Collect memory usage.')
     parser.add_argument ("--network",  action='store_true',     help='Collect network usage.')
     parser.add_argument ("--apacheLog",  action='store_true',     help='Collect network usage.')
+    parser.add_argument ("--verbosity",  nargs=1, type=int,  choices=range(0, 3),  help='Verbosty of logging, a positive number from 0 (nothing except errors) to 2 (a lot).  The default is 1.')
 
     args = parser.parse_args()
+    common.setLogLevel (args.verbosity[0] if args.verbosity else 1)
+    common.parse_config()
 
     stats = []
 

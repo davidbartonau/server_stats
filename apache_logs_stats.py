@@ -3,21 +3,33 @@
 
 import os, glob, re 
 import common
+import logging
 
 
-def get_response_time(line='', url_regex=None):
-    splited = line.split()
-    url = splited[11].split('?')[0]
+def get_response_time(line, line_parser_re, url_regex):
+    line_match = line_parser_re.search (line)
+
+    if not line_match:
+        logging.info ("LOGS Line did not match: %s", line)
+        return None
+        
+    url = line_match.group(1)
+    duration = line_match.group(2)
 
     if url_regex:
         if not url_regex.search(url):
+            logging.info ("LOGS URL did not match: %s %s", url, url_regex.pattern)
             return None
+        
+    logging.info ("LOGS URL matched: %s %s", url, duration)
 
-    return float(splited[9].replace('ms', ''))
+    return float(duration)
+
 
 def process_logs(log_name_pattern, url_regex=None):
     response_times = []
     non_matching_count = 0
+    line_parser_re = re.compile('[^"]*"[^ ]* ([^ ]*) [^"]*" [0-9]* ([0-9])*ms .*')
 
     for log_path in glob.glob(log_name_pattern):
         log_name = os.path.basename(log_path)
@@ -32,12 +44,12 @@ def process_logs(log_name_pattern, url_regex=None):
                 common.process_exception(e, critical = True)
         
         try:
-            print "LOGS Checking log: %s shift: %d" % (log_path, shift)
+            logging.info ("LOGS Checking log: %s shift: %d", log_path, shift)
 
             with open(log_path, 'r') as apache_log:
                 apache_log.seek(shift, 0)
                 for line in apache_log:
-                    response_time = get_response_time(line, url_regex)
+                    response_time = get_response_time(line, line_parser_re, url_regex)
                     if response_time != None:
                         response_times.append(response_time)
                     else:
@@ -64,7 +76,7 @@ def apache_stats():
     if not common.check_config_sections(['apache_logs',]):
         return apache_logs_stats
 
-    for website in common.config['apache_logs']:
+    for website in common.CONFIG['apache_logs']:
         website_name = website.keys()[0]
         website_config = website.values()[0]
         log_file_pattern = website_config.get('file', None)
@@ -77,7 +89,7 @@ def apache_stats():
         count, avg_time, non_matching_count = process_logs(log_file_pattern, url_regex)
 
         date = common.now()
-        print "LOGS date: %s website: MATCHING %s count: %s duration: %s NON-MATCHING: %s" % (date, website_name, count, avg_time, non_matching_count)
+        logging.info ("LOGS date: %s website: MATCHING %s count: %s duration: %s NON-MATCHING: %s", date, website_name, count, avg_time, non_matching_count)
         apache_logs_stats.extend([
             {'date': date, 't': 'LOG_REQUESTS-COUNT', 'd1': common.HOSTNAME, 'd2': website_name, 'V': count},
             {'date': date, 't': 'LOG_REQUESTS-DURATION', 'd1': common.HOSTNAME, 'd2': website_name, 'V': avg_time},
