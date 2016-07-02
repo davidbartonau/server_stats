@@ -127,3 +127,24 @@ apache_logs:
         - website2:
                 file: /var/log/apache2/log_website2*.log
 ```
+
+# TODO
+The project is finished.  Hahaha ... just kidding.  Some more items I can think of are:
+
+#### Apache Log to General Logging
+There is no reason why the apache log couldn't match other types of logs e.g. application logs.  We just need an extractor to pull out the pattern to check and the value to store.  For some logs, we might not need a value it is simply enough to record the number of lines e.g. matching ERROR.
+
+#### Line Matching Power
+Something like the rsync where you can specify includes and exclude regexes and it processes them in sequence.  For example
+- exclude: do_not_track.jsp
+- include: .jsp
+- include: .htm
+
+#### More stats collectors
+This could go on forever, which is why the following is good.
+
+#### Make the code structure OO
+Each stats extractor screams to be a class.  Then add plugins to support new types of stats.
+
+This could be done like Nagios where we call an executable and it just returns json rather than a tightly coupled python module.
+
