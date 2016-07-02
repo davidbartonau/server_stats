@@ -7,6 +7,7 @@ import logging
 
 
 def get_response_time(line, line_parser_re, url_regex):
+    # Regex to match the server log line.
     line_match = line_parser_re.search (line)
 
     if not line_match:
