@@ -73,6 +73,10 @@ We scan the matching log files.  The log files are a standard Apache tomcat log 
 ```
 203.161.1.2 - - [01/Jul/2016:06:52:08 +0800] "GET /test/file.htm HTTP/1.1" 200 1ms 53938 "http://www.madeup.com.au/test/index.htm" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.63 Safari/537.36" www.madeup.com.au
 ```
+I set that up in Tomcat using the following code in server.xml:
+```
+<Valve className="org.apache.catalina.valves.AccessLogValve" directory="/usr/local/tomcat/vm1/logs/" prefix="tc" suffix=".log" pattern="%h %l %u %t &quot;%r&quot; %s %Dms %b &quot;%{Referer}i&quot; &quot;%{User-agent}i&quot; %v" resolveHosts="false"/>
+```
 Sample POST Data
 ```
 
