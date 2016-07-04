@@ -15,13 +15,13 @@ CONFIG = None
 
 def setLogLevel (logLevel):
     if logLevel == 0:
-        logging.basicConfig(format = LOG_FMT, level = logging.WARNING, datefmt = DATEFMT)
+        logging.basicConfig(format = LOG_FMT, level = logging.WARNING, datefmt = DATEFMT, stream = sys.stdout)
     elif logLevel == 1:
-        logging.basicConfig(format = LOG_FMT, level = logging.INFO, datefmt = DATEFMT)        
+        logging.basicConfig(format = LOG_FMT, level = logging.INFO, datefmt = DATEFMT, stream = sys.stdout)        
     elif logLevel == 2:
-        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT)
+        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT, stream = sys.stdout)
     elif logLevel == 3:
-        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT)
+        logging.basicConfig(format = LOG_FMT, level = logging.DEBUG, datefmt = DATEFMT, stream = sys.stdout)
 
 def process_exception(e, critical = False):
     global EXIT_CODE
