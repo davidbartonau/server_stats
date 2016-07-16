@@ -11,7 +11,7 @@ def get_response_time(line, line_parser_re, url_regex):
     line_match = line_parser_re.search (line)
 
     if not line_match:
-        logging.info ("LOGS Line did not match: %s", line)
+        logging.debug ("LOGS Line did not match: %s", line)
         return None
         
     url = line_match.group(1)
@@ -19,10 +19,10 @@ def get_response_time(line, line_parser_re, url_regex):
 
     if url_regex:
         if not url_regex.search(url):
-            logging.info ("LOGS URL did not match: %s %s", url, url_regex.pattern)
+            logging.debug ("LOGS URL did not match: %s %s", url, url_regex.pattern)
             return None
         
-    logging.info ("LOGS URL matched: %s %s", url, duration)
+    logging.debug ("LOGS URL matched: %s %s", url, duration)
 
     return float(duration)
 
