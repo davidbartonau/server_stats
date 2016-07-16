@@ -12,7 +12,11 @@ def network_stats():
     if not common.check_config_sections(['networking', 'interfaces']):
         return network_bytes
 
-    counters = psutil.network_io_counters(pernic=True)
+    if hasattr(psutil, 'network_io_counters'):
+        counters = psutil.network_io_counters(pernic=True)
+    else:
+        counters = psutil.net_io_counters(True)
+
     for interface in common.CONFIG['networking']['interfaces']:
         counter = counters.get(interface, None)
         if not counter:
