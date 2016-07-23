@@ -61,7 +61,7 @@ def send_stats(stats={}):
     date = now()
     logging.info ("API request date: %s json %s", date, json_data, )
 
-    resp = requests.post(CONFIG['api_url'], data = {'json': json_data})
+    resp = requests.post(CONFIG['api_url'], data = {'json': json_data}, timeout = 30)
     if resp.status_code != 200:
         process_exception("API responded with non 200 status. code: %s body: %s" %(resp.status_code, resp.text), critical = True)
 
